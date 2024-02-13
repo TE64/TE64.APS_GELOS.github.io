@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>GELOS</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="data/PointLumineux_2.js"></script>
+        <script src="data/Boule_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[43.27378586745752,-0.3929779224695418],[43.29316470997172,-0.34429057593210394]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleSatellite_0');
+        map.getPane('pane_GoogleSatellite_0').style.zIndex = 400;
+        var layer_GoogleSatellite_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatellite_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleSatellite_0;
+        map.addLayer(layer_GoogleSatellite_0);
+        map.createPane('pane_OSMStandard_1');
+        map.getPane('pane_OSMStandard_1').style.zIndex = 401;
+        var layer_OSMStandard_1 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OSMStandard_1',
+            opacity: 1.0,
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OSMStandard_1;
+        map.addLayer(layer_OSMStandard_1);
+        function pop_PointLumineux_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Libell�'] !== null ? autolinker.link(feature.properties['Libell�'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Rue'] !== null ? autolinker.link(feature.properties['Rue'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Num�ro de rue'] !== null ? autolinker.link(feature.properties['Num�ro de rue'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lanterne/Libell�'] !== null ? autolinker.link(feature.properties['Lanterne/Libell�'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lanterne/Type'] !== null ? autolinker.link(feature.properties['Lanterne/Type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lanterne/R�f�rence'] !== null ? autolinker.link(feature.properties['Lanterne/R�f�rence'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lanterne/Marque'] !== null ? autolinker.link(feature.properties['Lanterne/Marque'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lampe/R�f�rence'] !== null ? autolinker.link(feature.properties['Lampe/R�f�rence'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_PointLumineux_2_0(feature) {
+            switch(String(feature.properties['q2wHide_Lampe/Type'])) {
+                case 'Ballon Fluo':
+                    return {
+                pane: 'pane_PointLumineux_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(218,0,4,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Halog�ne':
+                    return {
+                pane: 'pane_PointLumineux_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,224,214,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Iodure m�tallique':
+                    return {
+                pane: 'pane_PointLumineux_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(54,63,234,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'LED':
+                    return {
+                pane: 'pane_PointLumineux_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(0,214,46,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Sodium haute pression':
+                    return {
+                pane: 'pane_PointLumineux_2',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,238,0,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_PointLumineux_2');
+        map.getPane('pane_PointLumineux_2').style.zIndex = 402;
+        map.getPane('pane_PointLumineux_2').style['mix-blend-mode'] = 'normal';
+        var layer_PointLumineux_2 = new L.geoJson(json_PointLumineux_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_PointLumineux_2',
+            layerName: 'layer_PointLumineux_2',
+            pane: 'pane_PointLumineux_2',
+            onEachFeature: pop_PointLumineux_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_PointLumineux_2_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_PointLumineux_2);
+        map.addLayer(layer_PointLumineux_2);
+        function pop_Boule_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Libell�'] !== null ? autolinker.link(feature.properties['Libell�'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Rue'] !== null ? autolinker.link(feature.properties['Rue'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Num�ro d'] !== null ? autolinker.link(feature.properties['Num�ro d'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lanterne/R'] !== null ? autolinker.link(feature.properties['Lanterne/R'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Lampe/R�'] !== null ? autolinker.link(feature.properties['Lampe/R�'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Boule_3_0(feature) {
+            switch(String(feature.properties['q2wHide_Lampe/Type'])) {
+                case 'Ballon Fluo':
+                    return {
+                pane: 'pane_Boule_3',
+                radius: 5.6,
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,0,0,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Sodium haute pression':
+                    return {
+                pane: 'pane_Boule_3',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(216,39,71,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Boule_3');
+        map.getPane('pane_Boule_3').style.zIndex = 403;
+        map.getPane('pane_Boule_3').style['mix-blend-mode'] = 'normal';
+        var layer_Boule_3 = new L.geoJson(json_Boule_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Boule_3',
+            layerName: 'layer_Boule_3',
+            pane: 'pane_Boule_3',
+            onEachFeature: pop_Boule_3,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Boule_3_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_Boule_3);
+        map.addLayer(layer_Boule_3);
+        map.on("zoomend", function(e) {
+            if (map.getZoom() <= 19 && map.getZoom() >= 2) {
+                map.addLayer(layer_PointLumineux_2);
+            } else if (map.getZoom() > 19 || map.getZoom() < 2) {
+                map.removeLayer(layer_PointLumineux_2);
+            }
+        });
+            if (map.getZoom() <= 19 && map.getZoom() >= 2) {
+                map.addLayer(layer_PointLumineux_2);
+            } else if (map.getZoom() > 19 || map.getZoom() < 2) {
+                map.removeLayer(layer_PointLumineux_2);
+            }
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>GELOS</h2>';
+            };
+            title.addTo(map);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'Boule<br /><table><tr><td style="text-align: center;"><img src="legend/Boule_3_BouleBallonFluo0.png" /></td><td>Boule  Ballon Fluo</td></tr><tr><td style="text-align: center;"><img src="legend/Boule_3_BouleSodiumhautepression1.png" /></td><td>Boule  Sodium haute pression</td></tr></table>': layer_Boule_3,'Point Lumineux<br /><table><tr><td style="text-align: center;"><img src="legend/PointLumineux_2_BallonFluo0.png" /></td><td>Ballon Fluo</td></tr><tr><td style="text-align: center;"><img src="legend/PointLumineux_2_Halogène1.png" /></td><td>Halogène</td></tr><tr><td style="text-align: center;"><img src="legend/PointLumineux_2_Ioduremétallique2.png" /></td><td>Iodure métallique</td></tr><tr><td style="text-align: center;"><img src="legend/PointLumineux_2_LED3.png" /></td><td>LED</td></tr><tr><td style="text-align: center;"><img src="legend/PointLumineux_2_Sodiumhautepression4.png" /></td><td>Sodium haute pression</td></tr></table>': layer_PointLumineux_2,"OSM Standard": layer_OSMStandard_1,"Google Satellite": layer_GoogleSatellite_0,},{collapsed:false}).addTo(map);
+        map.on("zoomend", function(){
+
+                if (map.hasLayer(layer_PointLumineux_2)) {
+                    if (map.getZoom() <= 17 && map.getZoom() >= 19) {
+                        layer_PointLumineux_2.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_PointLumineux_2.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+        });
+        setBounds();
+        var i = 0;
+        layer_PointLumineux_2.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Libell�'] !== null?String('<div style="color: #323232; font-size: 8pt; font-family: \'Arial\', sans-serif;">' + layer.feature.properties['Libell�']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_PointLumineux_2'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_Boule_3.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Lampe/R�'] !== null?String('<div style="color: #323232; font-size: 10pt; font-weight: bold; font-family: \'Arial\', sans-serif;">' + layer.feature.properties['Lampe/R�']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_Boule_3'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+                if (map.hasLayer(layer_PointLumineux_2)) {
+                    if (map.getZoom() <= 17 && map.getZoom() >= 19) {
+                        layer_PointLumineux_2.eachLayer(function (layer) {
+                            layer.openTooltip();
+                        });
+                    } else {
+                        layer_PointLumineux_2.eachLayer(function (layer) {
+                            layer.closeTooltip();
+                        });
+                    }
+                }
+        resetLabels([layer_PointLumineux_2,layer_Boule_3]);
+        map.on("zoomend", function(){
+            resetLabels([layer_PointLumineux_2,layer_Boule_3]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_PointLumineux_2,layer_Boule_3]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_PointLumineux_2,layer_Boule_3]);
+        });
+        </script>
+    </body>
+</html>
